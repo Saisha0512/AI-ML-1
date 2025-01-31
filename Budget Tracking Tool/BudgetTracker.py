@@ -1,6 +1,10 @@
 import csv
 import os
 
+import pandas as pd
+from reportlab.lib.pagesizes import letter
+from reportlab.pdfgen import canvas
+
 DATA_FILE = 'budget_data.csv'
 
 def initialize_data_file():
@@ -69,6 +73,32 @@ def generate_report():
 
 def export_to_excel_or_pdf():
     # TODO: Provide an option to export the transaction data to a PDF or Excel file.
+    df = pd.read_csv(DATA_FILE)
+    print("1. Export to Excel")
+    print("2. Export to PDF")
+    choice = input("Choose an option: ")
+    if choice == '1':
+        df.to_excel('budget_data.xlsx', index=False)
+        print("Data exported to budget_data.xlsx")
+    elif choice == '2':
+        pdf_file = 'budget_data.pdf'
+        c = canvas.Canvas(pdf_file, pagesize=letter)
+        width, height = letter
+        c.drawString(100, height - 40, "Budget Transactions Report")
+        y_position = height - 80
+        
+        for i, row in df.iterrows():
+            line = f"{row['Type']}, {row['Category']}, {row['Amount']}, {row['Description']}"
+            c.drawString(100, y_position, line)
+            y_position -= 20
+            if y_position < 50:
+                c.showPage()
+                y_position = height - 80
+        
+        c.save()
+        print("Data exported to budget_data.pdf")
+    else:
+        print("Invalid choice.")
     pass
 
 def search_transactions():
