@@ -20,6 +20,13 @@ def add_transaction(transaction_type, category, amount, description):
 
 def update_transaction(index, transaction_type, category, amount, description):
     # TODO: Validate that the provided index is valid.
+    total=read_transactions()
+    if len(total)==0:
+        print("no transaction exists to be deleted")
+        return
+    if index<0 or index>=len(total):
+        print("invalid index....please enter a valid index")
+        return
     temp_file = DATA_FILE + '.tmp'
     with open(DATA_FILE, mode='r') as file, open(temp_file, mode='w', newline='') as temp:
         reader = csv.reader(file)
@@ -33,6 +40,13 @@ def update_transaction(index, transaction_type, category, amount, description):
 
 def delete_transaction(index):
     # TODO: Validate that the provided index is valid.
+    total=read_transactions()
+    if len(total)==0:
+        print("no transaction exists to be deleted")
+        return
+    if index<0 or index>=len(total):
+        print("invalid index....please enter a valid index")
+        return
     temp_file = DATA_FILE + '.tmp'
     with open(DATA_FILE, mode='r') as file, open(temp_file, mode='w', newline='') as temp:
         reader = csv.reader(file)
@@ -105,15 +119,36 @@ def main():
             description = input("Enter description (optional): ") or "No description"  # TODO: Handle optional descriptions.
             add_transaction(transaction_type, category, amount, description)
         elif choice == '2':
-            index = int(input("Enter transaction index to update: "))  # TODO: Use a validated index.
+            total=read_transactions()
+            if(len(total)==0):
+                print("no transactions made yet..please add transactions first")
+                continue
+            else:
+                 while True:
+                     index = int(input("Enter transaction index to update: "))   # TODO: Use a validated index.
+                     if(index>=0 and index<len(total)):
+                         break
+                     else:
+                         print("Invalid index..please enter valid index")
+
             transaction_type = input("Enter transaction type (income/expense): ")
             category = input("Enter category: ")
             amount = input("Enter amount: ")
             description = input("Enter description (optional): ") 
             update_transaction(index, transaction_type, category, amount, description)
         elif choice == '3':
-            index = int(input("Enter transaction index to delete: "))  # TODO: Use a validated index.
-            delete_transaction(index)
+            total=read_transactions()
+            if(len(total)==0):
+                print("no transactions to delete..please first add transactions")
+                continue
+            else:
+                while True:
+                    index = int(input("Enter transaction index to delete: "))    # TODO: Use a validated index.
+                    if index>=0 and index<len(total):
+                        break
+                    else:
+                        print("invalid index...please enter again")
+                delete_transaction(index)
         elif choice == '4':
             generate_report()
         elif choice == '5':
